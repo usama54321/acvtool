@@ -34,14 +34,13 @@ class Instrumenter(object):
         '''Generates tracking code for evry smali instruction and label.'''
         print('instrumenting')
 
-    def save_instrumented_smali(self, output_dir, instrument=True):
+    def save_instrumented_smali(self, output_dir, instrument=True, class_number = 0, method_number = 0):
         '''Saves instrumented smali to the specified directory/'''
         print("saving instrumented smali:  %s..." % output_dir)
         if os.path.exists(output_dir):
             shutil.rmtree(output_dir)
         os.makedirs(output_dir)
         classes_info = []
-        class_number = 0 # to make array name unique
         # Helps to find specific method that cased a fail after the instrumentation.
         # See '# Debug purposes' below
         method_number = 0
@@ -65,11 +64,15 @@ class Instrumenter(object):
                 dbg_instrument = False
         if self.dbg:
             print("Number of methods instrumented: {0}-{1} from {2}".format(self.dbg_start, self.dbg_end, method_number))
+        return (classes_info, class_number, method_number)
+        """
         if instrument:
+            print("isFirst, instrumenting reporter class")
             self.generate_reporter_class(classes_info, output_dir)
             if self.mem_stats:
                 self.save_reporter_array_stats(classes_info)
             Utils.copytree(self.instrumentation_smali_path, output_dir)
+        """
         
     def generate_reporter_class(self, classes_info, dir_path):
         acv_reporter = AcvReporter(classes_info)

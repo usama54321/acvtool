@@ -40,11 +40,16 @@ def generate(package, pickle_path, output_dir, ec_dir=None, xml=True, html=True,
 
 def get_covered_smalitree(ec_files, pickle_path):
     st = None
+
+    name = os.path.basename(pickle_path)
+    class_offset = int(name.split("-")[2])
+    print("class offset", class_offset)
+
     with open(pickle_path, 'rb') as f:
         st = pickle.load(f)
     for ec in ec_files:
         coverage = read_ec(ec)
-        cover_smalitree(st, coverage)
+        cover_smalitree(st, coverage, class_offset)
     return st
 
 def generate_xml(smalitree, app_name, granularity):
@@ -260,10 +265,11 @@ def read_ec(ec_path):
         pobj = marshaller.readObject()
     return pobj
 
-def cover_smalitree(st, coverage):
-    i = 0
+def cover_smalitree(st, coverage, class_offset):
+    i = class_offset
     for c_i in range(len(st.classes)):
         cl = st.classes[c_i]
+        #print("class details", cl, cl.is_coverable())
         if cl.is_coverable():
             cov_class = coverage[i]
             i += 1
